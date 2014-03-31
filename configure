@@ -6,6 +6,7 @@ rm -f config.mk config.h
 
 echo "// automatically generated file" > config.h
 
+CC=gcc
 LDFLAGS="${LDFLAGS} -lm -lpthread"
 
 export_config()
@@ -13,6 +14,15 @@ export_config()
     echo "#define $1" >> config.h
     echo "$1=yes" >> config.mk
     eval "$1=yes"
+}
+
+test_compiler()
+{
+  cat > test_compiler.c <<EOF
+  main() { }
+EOF
+
+  ${1} -o test_compiler test_compiler.c >/dev/null 2>&1
 }
 
 # check for header $1 with CONFIG_ var $2
@@ -56,6 +66,19 @@ do_pkg_config()
         fi
     fi
 }
+
+if test_compiler gcc; then
+  CC=gcc
+elif test_compiler clang; then
+  CC=clang
+elif test_compiler cc; then
+  CC=cc
+else
+  echo "C compiler could not be found"
+  exit 1
+fi
+
+echo "Compiler: ${CC}"
 
 do_pkg_config OpenSSL       openssl
 do_pkg_config libao         ao              CONFIG_AO
