@@ -29,7 +29,7 @@ EOF
 check_header()
 {
     echo "#include<$1>" > .header_test.c
-    if gcc -c .header_test.c > /dev/null 2>&1 /dev/null;  then
+    if ${CC} -c .header_test.c > /dev/null 2>&1 /dev/null;  then
         echo "$1 found"
         if [ "$2" ]; then
             export_config $2
